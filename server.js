@@ -321,124 +321,125 @@ app.get('/api/video/:customerId/script', (req, res) => {
   if (!c) return res.status(404).json({ error: 'Customer not found' });
 
   // Format agreement date from customer date or today
+  // en-IN so the script stays fully in Latin script (Hinglish)
   const agreeDate = c.date
-    ? new Date(c.date).toLocaleDateString('hi-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })
-    : new Date().toLocaleDateString('hi-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    ? new Date(c.date).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    : new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
   const name = c.name || '___';
-  const fee = c.successFee ? 'रु. ' + Number(c.successFee).toLocaleString('en-IN') : 'रु. ___';
+  const fee = c.successFee ? 'Rs. ' + Number(c.successFee).toLocaleString('en-IN') : 'Rs. ___';
   const chequeNo = c.chequeNo || '___';
   const bankBranch = c.chequeBankBranch || '___';
 
   // Cheque amount + the 25% liquidated-damages figure (Sections 16.5 / 17.6 / 18.6)
   const chequeAmtNum = Number(c.chequeAmt || c.successFee || 0) || 0;
-  const chequeAmt = chequeAmtNum ? 'रु. ' + chequeAmtNum.toLocaleString('en-IN') : 'रु. ___';
+  const chequeAmt = chequeAmtNum ? 'Rs. ' + chequeAmtNum.toLocaleString('en-IN') : 'Rs. ___';
   const ld25 = chequeAmtNum
-    ? 'रु. ' + Math.round(chequeAmtNum * 0.25).toLocaleString('en-IN')
-    : 'रु. ___';
+    ? 'Rs. ' + Math.round(chequeAmtNum * 0.25).toLocaleString('en-IN')
+    : 'Rs. ___';
 
   const blocks = [
     {
-      label: 'प्रारंभ (Opening)',
+      label: 'Prarambh (Opening)',
       type: 'opening',
-      text: `आज दिनांक ${agreeDate}, हम ${name} जी की ऋण सुविधा परामर्श अनुबंध की वीडियो पुष्टि रिकॉर्ड कर रहे हैं।`
+      text: `Aaj dinank ${agreeDate}, hum ${name} ji ke loan facility consultancy agreement ki video pushti record kar rahe hain.`
     },
     {
-      label: 'Q1 — पहचान (Section 1)',
-      text: 'अपना पूरा नाम और पिता/पति का नाम बताइए।'
+      label: 'Q1 — Pehchaan (Section 1)',
+      text: 'Apna pura naam aur pita/pati ka naam bataiye.'
     },
     {
-      label: 'Q2 — स्वैच्छिक हस्ताक्षर (Section 19 (b))',
-      text: 'क्या आपने यह अनुबंध बिना किसी दबाव या जोर-जबरदस्ती के, अपनी स्वतंत्र इच्छा से हस्ताक्षर किया है?'
+      label: 'Q2 — Apni marzi se signature (Section 19 (b))',
+      text: 'Kya aapne yeh agreement bina kisi dabaav ya zor-zabardasti ke, apni marzi se sign kiya hai?'
     },
     {
-      label: 'Q3 — शुल्क की समझ (Section 2, Section 19 (s))',
-      text: `क्या आप समझते हैं कि Ruralift की परामर्श सेवा निःशुल्क है, और सफलता-आधारित शुल्क ${fee} केवल ऋण के सफल वितरण पर ही देय होगा?`
+      label: 'Q3 — Fee ki samajh (Section 2, Section 19 (s))',
+      text: `Kya aap samajhte hain ki Ruralift ki consultancy service nishulk (free) hai, aur success-based fee ${fee} sirf loan ke safal disbursement par hi deni hogi?`
     },
     {
-      label: 'Q4 — PDC की समझ (Section 3, Section 19 (i))',
-      text: `क्या आपने स्वेच्छा से चेक नंबर ${chequeNo} (${bankBranch}), राशि ${chequeAmt} जारी किया है, और आप समझते हैं कि यह कब जमा किया जा सकता है — ऋण वितरण पर शुल्क के रूप में, या अनुबंध भंग होने पर नुकसान भरपाई की वसूली के रूप में?`
+      label: 'Q4 — PDC ki samajh (Section 3, Section 19 (i))',
+      text: `Kya aapne apni marzi se cheque number ${chequeNo} (${bankBranch}), rashi ${chequeAmt} jari kiya hai, aur aap samajhte hain ki yeh kab jama kiya ja sakta hai — loan disbursement par fee ke roop mein, ya agreement bhang hone par nuksan bharpai ki vasooli ke roop mein?`
     },
     {
-      label: 'Q5 — चेक बाउंस परिणाम (Section 3 (f), Section 19 (n))',
-      text: 'क्या आप जानते हैं कि चेक अनादरण की स्थिति में आप Section 138, परक्राम्य लिखत अधिनियम के अंतर्गत आपराधिक रूप से दायी होंगे?'
+      label: 'Q5 — Cheque bounce ka parinaam (Section 3 (f), Section 19 (n))',
+      text: 'Kya aap jaante hain ki cheque bounce hone ki sthiti mein aap Section 138, Negotiable Instruments Act ke antargat criminal roop se zimmedar honge?'
     },
     {
-      label: 'Q6 — DSA/कमीशन खुलासा (Section 1 (d), Section 19 (j))',
-      text: 'क्या आपको बताया गया है कि Ruralift का ऋण संस्थानों के साथ DSA संबंध हो सकता है और वह कमीशन भी प्राप्त कर सकता है — फिर भी आप यह अतिरिक्त परामर्श शुल्क देने पर सहमत हैं?'
+      label: 'Q6 — DSA/commission ka khulasa (Section 1 (d), Section 19 (j))',
+      text: 'Kya aapko bataya gaya hai ki Ruralift ka loan sansthaon ke saath DSA sambandh ho sakta hai aur vah commission bhi prapt kar sakta hai — phir bhi aap yeh atirikt consultancy fee dene par sahmat hain?'
     },
     {
-      label: 'Q7 — सर्वोत्तम प्रयास / पूरी कोशिश (Section 1 (b), Section 19 (h))',
-      text: 'क्या आप समझते हैं कि Ruralift आपका ऋण स्वीकृत कराने के लिए अपनी पूरी कोशिश और सर्वोत्तम प्रयास करेगा — सही ऋणदाता का चुनाव, फ़ाइल की सही प्रस्तुति और लगातार फॉलो-अप — परंतु स्वीकृति का अंतिम निर्णय बैंक/NBFC का होता है, जिस पर Ruralift का कोई नियंत्रण नहीं है?'
+      label: 'Q7 — Best efforts / poori koshish (Section 1 (b), Section 19 (h))',
+      text: 'Kya aap samajhte hain ki Ruralift aapka loan approve karane ke liye apni poori koshish aur best efforts karega — sahi lender ka chunaav, file ki sahi prastuti aur lagatar follow-up — parantu approval ka antim nirnay bank/NBFC ka hota hai, jis par Ruralift ka koi control nahi hai?'
     },
     {
-      label: 'Q8 — दस्तावेज़ों की सत्यता (Section 19 (g))',
-      text: 'क्या आपके द्वारा दिए गए सभी दस्तावेज़ और जानकारी सत्य, सटीक और पूर्ण हैं?'
+      label: 'Q8 — Documents ki satyata (Section 19 (g))',
+      text: 'Kya aapke dwara diye gaye sabhi documents aur jaankari satya, sateek aur poorn hain?'
     },
     {
-      label: 'Q9 — पूर्ण ऋण, EMI और गारंटी घोषणा (Section 16 (a), Section 19 (th))',
-      text: `क्या आपने हमें अपने सभी ऋण और दायित्व बता दिए हैं? इसमें शामिल है —
-(a) आपके अपने नाम पर चालू सभी ऋण — होम लोन, कार लोन, पर्सनल लोन, बिज़नेस लोन, गोल्ड लोन, KCC;
-(b) हर ऋण की EMI और outstanding balance;
-(c) क्रेडिट कार्ड, ओवरड्राफ्ट, कैश क्रेडिट लिमिट;
-(d) माइक्रोफाइनांस / SHG / joint liability group का कोई भी लोन;
-(e) वे सभी ऋण जिनमें आप GUARANTOR या co-applicant हैं — चाहे आप EMI न भरते हों;
-(f) कोई भी ऋण जो बंद हो गया हो मगर पूरी तरह वसूल नहीं हुआ — write-off, settlement या restructure;
-(g) कोई भी overdue या late payment जो अभी भी pending है;
-(h) कोई भी निजी / साहूकार का लोन जो बैंक रिकॉर्ड में नहीं है।
+      label: 'Q9 — Poore loan, EMI aur guarantee ki ghoshna (Section 16 (a), Section 19 (th))',
+      text: `Kya aapne humein apne sabhi loan aur daayitva bata diye hain? Ismein shamil hai —
+(a) aapke apne naam par chaalu sabhi loan — home loan, car loan, personal loan, business loan, gold loan, KCC;
+(b) har loan ki EMI aur outstanding balance;
+(c) credit card, overdraft, cash credit limit;
+(d) microfinance / SHG / joint liability group ka koi bhi loan;
+(e) ve sabhi loan jinmein aap GUARANTOR ya co-applicant hain — chaahe aap EMI na bharte hon;
+(f) koi bhi loan jo band ho gaya ho magar poori tarah vasool nahi hua — write-off, settlement ya restructure;
+(g) koi bhi overdue ya late payment jo abhi bhi pending hai;
+(h) koi bhi niji / saahukaar ka loan jo bank record mein nahi hai.
 
-क्या आपने यह सब बता दिया है और कुछ भी नहीं छिपाया? — केवल "हाँ" या "नहीं" कहें।`
+Kya aapne yeh sab bata diya hai aur kuch bhi nahi chhipaya? — sirf "Haan" ya "Nahi" kahein.`
     },
     {
-      label: 'Q10 — परिशिष्ट "अ" स्व-घोषणा और 25% पेनल्टी (Section 16 (b))',
-      text: `क्या आपने परिशिष्ट "अ" — यानी अपने सभी ऋण, EMI, गारंटी और दायित्वों की सूची — अपने हाथ से लिखकर हस्ताक्षर किया है?
+      label: 'Q10 — Parishisht "A" swa-ghoshna aur 25% penalty (Section 16 (b))',
+      text: `Kya aapne Parishisht "A" — yaani apne sabhi loan, EMI, guarantee aur daayitvon ki list — apne haath se likhkar sign kiya hai?
 
-और क्या आप समझते हैं कि यदि प्रक्रिया के बीच में — CIBIL रिपोर्ट आने के बाद या फ़ाइल submit होने के बाद — कोई भी ऐसा ऋण, EMI, गारंटी, write-off, settlement या कोई भी दायित्व सामने आया जो आपने घोषणापत्र में नहीं लिखा — चाहे वह आपका खुद का ऋण हो या किसी और के लिए दी गई गारंटी हो — तो:
-(a) चेक राशि का 25%, यानी लगभग ${ld25}, नुकसान भरपाई के रूप में देना होगा;
-(b) Ruralift को पूरा अधिकार है कि वह उस चेक को बैंक में प्रस्तुत करे — चाहे वह bounce हो या न हो;
-(c) या आप ${ld25} नकद / UPI से penalty के रूप में दे सकते हैं।
+Aur kya aap samajhte hain ki yadi process ke beech mein — CIBIL report aane ke baad ya file submit hone ke baad — koi bhi aisa loan, EMI, guarantee, write-off, settlement ya koi bhi daayitva saamne aaya jo aapne ghoshna-patra mein nahi likha — chaahe vah aapka khud ka loan ho ya kisi aur ke liye di gayi guarantee ho — to:
+(a) cheque rashi ka 25%, yaani lagbhag ${ld25}, nuksan bharpai ke roop mein dena hoga;
+(b) Ruralift ko poora adhikar hai ki vah us cheque ko bank mein prastut kare — chaahe vah bounce ho ya na ho;
+(c) ya aap ${ld25} nakad / UPI se penalty ke roop mein de sakte hain.
 
-क्या आप यह सब समझते हैं और सहमत हैं? — केवल "हाँ" या "नहीं" कहें।`
+Kya aap yeh sab samajhte hain aur sahmat hain? — sirf "Haan" ya "Nahi" kahein.`
     },
     {
-      label: 'Q11 — निरंतर प्रकटन, 24 घंटे (Section 16 (c))',
-      text: 'क्या आप सहमत हैं कि आज के बाद और ऋण मिलने से पहले अगर आप कोई नया ऋण या क्रेडिट कार्ड लेते हैं, किसी का गारंटर बनते हैं, या कोई EMI चूक जाती है — तो आप 24 घंटे के भीतर हमें लिखित सूचना देंगे?'
+      label: 'Q11 — Nirantar disclosure, 24 ghante (Section 16 (c))',
+      text: 'Kya aap sahmat hain ki aaj ke baad aur loan milne se pehle agar aap koi naya loan ya credit card lete hain, kisi ka guarantor bante hain, ya koi EMI chook jaati hai — to aap 24 ghante ke bheetar humein likhit soochna denge?'
     },
     {
-      label: 'Q12 — प्रक्रिया शुरू होने के बाद वापसी नहीं (Section 17, Section 19 (d))',
-      text: `क्या आप समझते हैं कि आपकी CIBIL रिपोर्ट निकलने या फ़ाइल बैंक में लॉगिन होने के बाद आप आवेदन वापस नहीं ले सकते — न परिवार की आपत्ति पर, न मन बदलने पर, न किसी दूसरे एजेंट के प्रस्ताव पर, न ब्याज दर से असंतोष पर? और ऐसा करने पर चेक राशि का 25%, यानी लगभग ${ld25}, नुकसान भरपाई देनी होगी? आपको यह भी बता दिया गया है कि प्रक्रिया शुरू होने से पहले आप बिना कोई शुल्क दिए कभी भी पीछे हट सकते हैं।`
+      label: 'Q12 — Process shuru hone ke baad wapsi nahi (Section 17, Section 19 (d))',
+      text: `Kya aap samajhte hain ki aapki CIBIL report nikalne ya file bank mein login hone ke baad aap application wapas nahi le sakte — na parivaar ki aapatti par, na mann badalne par, na kisi doosre agent ke prastaav par, na interest rate se asantosh par? Aur aisa karne par cheque rashi ka 25%, yaani lagbhag ${ld25}, nuksan bharpai deni hogi? Aapko yeh bhi bata diya gaya hai ki process shuru hone se pehle aap bina koi fee diye kabhi bhi peechhe hat sakte hain.`
     },
     {
-      label: 'Q13 — ऋण मिलने पर 2 घंटे में सूचना (Section 18, Section 19 (d-2))',
-      text: 'क्या आप सहमत हैं कि ऋण की राशि आपके खाते में आने के 2 घंटे के भीतर आप हमें WhatsApp/SMS/ईमेल पर लिखित सूचना देंगे — जिसमें जमा की तारीख और समय, जमा हुई राशि, बैंक/NBFC का नाम, ऋण खाता नंबर, और बैंक का SMS या स्टेटमेंट का स्क्रीनशॉट होगा? और क्या आप समझते हैं कि वितरण छिपाने पर चेक राशि का 25% नुकसान भरपाई के रूप में देय होगा?'
+      label: 'Q13 — Loan milne par 2 ghante mein soochna (Section 18, Section 19 (d-2))',
+      text: 'Kya aap sahmat hain ki loan ki rashi aapke account mein aane ke 2 ghante ke bheetar aap humein WhatsApp/SMS/email par likhit soochna denge — jismein jama ki taarikh aur samay, jama hui rashi, bank/NBFC ka naam, loan account number, aur bank ka SMS ya statement ka screenshot hoga? Aur kya aap samajhte hain ki disbursement chhipane par cheque rashi ka 25% nuksan bharpai ke roop mein dena hoga?'
     },
     {
-      label: 'Q14 — नुकसान भरपाई की वसूली-व्यवस्था (Section 16 (f), Section 19 (n))',
-      text: 'क्या आप समझते हैं कि कोई भी नुकसान भरपाई देय होने पर पहले आपको 7 दिन का समय और नकद/UPI/बैंक ट्रांसफर से सीधे भुगतान करने का विकल्प दिया जाएगा — और पूरा भुगतान करने पर आपका चेक आपको वापस कर दिया जाएगा? अगर आप 7 दिन में भुगतान नहीं करते, तभी चेक वसूली के लिए लगाया जाएगा, और चेक की राशि देय राशि से ज़्यादा होने पर बाकी पैसा 15 दिन में आपको वापस कर दिया जाएगा।'
+      label: 'Q14 — Nuksan bharpai ki vasooli-vyavastha (Section 16 (f), Section 19 (n))',
+      text: 'Kya aap samajhte hain ki koi bhi nuksan bharpai deni hone par pehle aapko 7 din ka samay aur nakad/UPI/bank transfer se seedhe payment karne ka option diya jayega — aur poora payment karne par aapka cheque aapko wapas kar diya jayega? Agar aap 7 din mein payment nahi karte, tabhi cheque vasooli ke liye lagaya jayega, aur cheque ki rashi deni wali rashi se zyada hone par baaki paisa 15 din mein aapko wapas kar diya jayega.'
     },
     {
-      label: 'Q15 — डेटा शेयरिंग सहमति (Section 8, Section 19 (j))',
-      text: 'क्या आप सहमत हैं कि आपकी जानकारी बैंकों/NBFCs के साथ साझा की जा सकती है, और Ruralift आपकी क्रेडिट रिपोर्ट निकालकर व ऋणदाता से आपकी दी गई जानकारी का स्वतंत्र सत्यापन कर सकता है?'
+      label: 'Q15 — Data sharing sahmati (Section 8, Section 19 (j))',
+      text: 'Kya aap sahmat hain ki aapki jaankari banks/NBFCs ke saath share ki ja sakti hai, aur Ruralift aapki credit report nikaalkar va lender se aapki di gayi jaankari ka swatantra verification kar sakta hai?'
     },
     {
-      label: 'समापन पुष्टि (Closing — प्रतिनिधि पढ़कर सुनाएं)',
+      label: 'Samapan Pushti (Closing — pratinidhi padhkar sunayein)',
       type: 'closing',
-      text: `${name} जी, मैं आपको यह अंतिम पुष्टि पढ़कर सुना रहा/रही हूँ। कृपया ध्यान से सुनें और अंत में केवल "हाँ" या "नहीं" कहें —
+      text: `${name} ji, main aapko yeh antim pushti padhkar suna raha/rahi hoon. Kripya dhyaan se sunein aur ant mein sirf "Haan" ya "Nahi" kahein —
 
-आपने यह अनुबंध और परिशिष्ट "अ" स्वयं पढ़कर अथवा पढ़वाकर सुनकर, पूरी तरह समझकर, अपनी स्वेच्छा से हस्ताक्षर किया है। आपने अपने सभी ऋण, EMI, गारंटी और दायित्व — चालू हों या बंद — सही-सही घोषित कर दिए हैं और कुछ भी नहीं छिपाया है। आप यह भी जानते हैं कि कोई भी छिपी हुई जानकारी सामने आने पर चेक राशि का 25% नुकसान भरपाई के रूप में देना होगा और Ruralift को चेक प्रस्तुत करने का पूरा अधिकार होगा।
+Aapne yeh agreement aur Parishisht "A" swayam padhkar athva padhvaakar sunkar, poori tarah samajhkar, apni marzi se sign kiya hai. Aapne apne sabhi loan, EMI, guarantee aur daayitva — chaalu hon ya band — sahi-sahi ghoshit kar diye hain aur kuch bhi nahi chhipaya hai. Aap yeh bhi jaante hain ki koi bhi chhipi hui jaankari saamne aane par cheque rashi ka 25% nuksan bharpai ke roop mein dena hoga aur Ruralift ko cheque prastut karne ka poora adhikar hoga.
 
-क्या यह सब सही है और क्या आप इससे सहमत हैं?`
+Kya yeh sab sahi hai aur kya aap isse sahmat hain?`
     }
   ];
 
   // Customers are often unable to read, so nothing is ever recited by the
   // customer. The representative reads each block aloud and the customer
-  // answers हाँ / नहीं. Q1 (name) is the only open-ended answer.
+  // answers Haan / Nahi. Q1 (name) is the only open-ended answer.
   blocks.forEach(b => {
-    if (b.type === 'opening')          b.respond = 'प्रतिनिधि पढ़ें';
-    else if (b.type === 'closing')     b.respond = 'प्रतिनिधि पढ़कर सुनाएं — ग्राहक: हाँ / नहीं';
-    else if (/^Q1\b/.test(b.label))    b.respond = 'ग्राहक बोलकर बताएं';
-    else                               b.respond = 'हाँ / नहीं';
+    if (b.type === 'opening')          b.respond = 'Pratinidhi padhein';
+    else if (b.type === 'closing')     b.respond = 'Pratinidhi padhkar sunayein — Grahak: Haan / Nahi';
+    else if (/^Q1\b/.test(b.label))    b.respond = 'Grahak bolkar bataye';
+    else                               b.respond = 'Haan / Nahi';
   });
 
   res.json({ blocks });
