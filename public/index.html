@@ -1540,15 +1540,20 @@ loadCustomers();
   let recordedChunks = [];
   let recordedBlob = null;
   let videoScriptData = null;
-  let currentVideoStep = 0; // 0-4
+  let currentVideoStep = 0; // index into VIDEO_STEPS
 
   const VIDEO_STEPS = [
     { id: 'intro',     label: 'चरण 1 — प्रारंभ',           icon: '🎬' },
     { id: 'audio',     label: 'चरण 2 — ऑडियो सारांश',      icon: '🔊' },
     { id: 'questions', label: 'चरण 3 — प्रश्न',             icon: '❓' },
     { id: 'document',  label: 'चरण 4 — दस्तावेज़ दिखाएं',   icon: '📄' },
-    { id: 'finish',    label: 'चरण 5 — समाप्त करें',         icon: '✅' },
+    { id: 'closing',   label: 'चरण 5 — समापन पुष्टि',       icon: '🗣️' },
+    { id: 'finish',    label: 'चरण 6 — समाप्त करें',         icon: '✅' },
   ];
+
+  // Look steps up by id so inserting/reordering a step cannot desync the
+  // navigation logic from the step list.
+  const stepIndex = (id) => VIDEO_STEPS.findIndex(s => s.id === id);
 
   // ---- CAMERA ----
   async function startCamera() {
@@ -1695,7 +1700,7 @@ loadCustomers();
           • परामर्श सेवा निःशुल्क है<br>
           • सफलता शुल्क — ऋण वितरण पर ही देय<br>
           • PDC चेक — केवल वितरण या भंग होने पर<br>
-          • धारा 138 — चेक बाउंस पर आपराधिक दायित्व<br>
+          • Section 138 — चेक बाउंस पर आपराधिक दायित्व<br>
           • Ruralift पूरी कोशिश करेगा — स्वीकृति का निर्णय बैंक का<br>
           • <b>सभी ऋण/EMI/गारंटी बताना अनिवार्य</b> — छिपाने पर चेक राशि का 25%<br>
           • <b>प्रक्रिया शुरू होने के बाद वापसी नहीं</b> — करने पर चेक राशि का 25%<br>
@@ -1709,10 +1714,17 @@ loadCustomers();
     } else if (step.id === 'questions') {
       if (videoScriptData) {
         const qs = videoScriptData.blocks.filter(b => !b.type); // only Q blocks
-        body.innerHTML = qs.map((b, i) => `
+        body.innerHTML = `
+          <div style="background:#ede9fe;border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:13px;line-height:1.7;color:#3730a3">
+            <b>हर प्रश्न ग्राहक को पढ़कर सुनाएं।</b> ग्राहक को कुछ भी दोहराना नहीं है —
+            वह केवल <b>"हाँ" या "नहीं"</b> कहेगा/कहेगी। (केवल Q1 में नाम बोलकर बताना है।)
+          </div>` + qs.map((b, i) => `
           <div style="margin-bottom:14px;padding:10px 12px;border-radius:8px;background:#f8fafc;border-left:3px solid #7c3aed">
             <div style="font-size:11px;font-weight:700;color:#7c3aed;margin-bottom:4px">${b.label}</div>
-            <div style="font-size:14px;line-height:1.7">${b.text}</div>
+            <div style="font-size:14px;line-height:1.7;white-space:pre-line">${b.text}</div>
+            <div style="display:inline-block;margin-top:8px;padding:2px 10px;border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:700">
+              उत्तर: ${b.respond || 'हाँ / नहीं'}
+            </div>
           </div>`).join('');
       } else {
         body.innerHTML = '<p style="color:var(--gray-400)">स्क्रिप्ट लोड हो रही है…</p>';
@@ -1734,7 +1746,29 @@ loadCustomers();
         <p style="font-size:12px;color:#b45309;margin-bottom:10px">
           ⚠️ परिशिष्ट "अ" का हस्तलिखित भाग वीडियो में स्पष्ट दिखना ज़रूरी है — यही 25% क्षतिपूर्ति क्लॉज़ का मुख्य सबूत है।
         </p>
-        <p style="font-size:13px;color:var(--gray-600)">दस्तावेज़ स्पष्ट दिखने के बाद "समाप्त करें" दबाएं।</p>`;
+        <p style="font-size:13px;color:var(--gray-600)">दस्तावेज़ स्पष्ट दिखने के बाद "आगे" दबाएं।</p>`;
+      nextBtn.textContent = 'आगे — समापन पुष्टि →';
+      nextBtn.className = 'btn btn-primary btn-sm';
+
+    } else if (step.id === 'closing') {
+      const closing = videoScriptData
+        ? videoScriptData.blocks.find(b => b.type === 'closing')
+        : null;
+      body.innerHTML = closing ? `
+        <div style="background:#fef3c7;border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:13px;line-height:1.7;color:#92400e">
+          <b>🗣️ यह पूरा वक्तव्य ग्राहक को धीरे-धीरे पढ़कर सुनाएं।</b><br>
+          ग्राहक को इसे दोहराना नहीं है — अंत में वह केवल <b>"हाँ"</b> कहेगा/कहेगी।
+        </div>
+        <div style="padding:12px 14px;border-radius:8px;background:#f8fafc;border-left:3px solid #16a34a">
+          <div style="font-size:11px;font-weight:700;color:#166534;margin-bottom:6px">${closing.label}</div>
+          <div style="font-size:15px;line-height:1.9;white-space:pre-line">${closing.text}</div>
+          <div style="display:inline-block;margin-top:10px;padding:2px 10px;border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:700">
+            उत्तर: ${closing.respond || 'हाँ / नहीं'}
+          </div>
+        </div>
+        <p style="font-size:12px;color:#b45309;margin-top:12px">
+          ⚠️ ग्राहक का "हाँ" कैमरे में स्पष्ट सुनाई देना ज़रूरी है — तभी रिकॉर्डिंग रोकें।
+        </p>` : '<p style="color:var(--gray-400)">स्क्रिप्ट लोड हो रही है…</p>';
       nextBtn.textContent = 'रिकॉर्डिंग रोकें और समाप्त करें →';
       nextBtn.className = 'btn btn-danger btn-sm';
 
@@ -1755,19 +1789,18 @@ loadCustomers();
   }
 
   async function videoNextStep() {
-    if (currentVideoStep === 0) {
-      // Step 1 → 2: start recording
+    if (currentVideoStep === stepIndex('intro')) {
+      // intro → audio: start recording
       startRecording();
       currentVideoStep++;
-    } else if (currentVideoStep === 3) {
-      // Step 4 → 5: stop recording FIRST, wait for onstop to build the blob, then render finish step
+    } else if (currentVideoStep === stepIndex('closing')) {
+      // closing → finish: stop recording FIRST, wait for onstop to build the blob, then render finish step
       const nextBtn = document.getElementById('vstep-next');
       nextBtn.disabled = true;
       await stopRecording();
       nextBtn.disabled = false;
       currentVideoStep++;
-    } else if (currentVideoStep === 4) {
-      // Step 5: save
+    } else if (currentVideoStep === stepIndex('finish')) {
       saveVideo();
       return;
     } else {
@@ -1780,7 +1813,7 @@ loadCustomers();
   async function videoPrevStep() {
     if (currentVideoStep <= 0) return;
     // If going back from finish, restart recording cleanly
-    if (currentVideoStep === 4) {
+    if (currentVideoStep === stepIndex('finish')) {
       recordedBlob = null; recordedChunks = [];
       document.getElementById('video-save-status').textContent = '';
       document.getElementById('video-playback').style.display = 'none';
