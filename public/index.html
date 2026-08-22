@@ -617,7 +617,7 @@ textarea { resize: vertical; min-height: 70px; }
   <div class="video-modal">
     <div class="video-modal-header">
       <div style="display:flex;align-items:center;gap:12px;flex:1">
-        <h3>🎥 वीडियो सत्यापन रिकॉर्डिंग</h3>
+        <h3>🎥 Video Verification Recording</h3>
         <div id="vrec-indicator" style="display:none;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#ef4444">
           <span class="rec-dot"></span>REC
         </div>
@@ -657,16 +657,16 @@ textarea { resize: vertical; min-height: 70px; }
 
           <!-- Step footer: action button -->
           <div style="padding:12px 16px;border-top:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;gap:8px">
-            <button class="btn btn-outline btn-sm" id="vstep-prev" onclick="videoPrevStep()" style="display:none">← पिछला</button>
+            <button class="btn btn-outline btn-sm" id="vstep-prev" onclick="videoPrevStep()" style="display:none">← Pichhla</button>
             <div style="flex:1"></div>
-            <button class="btn btn-primary btn-sm" id="vstep-next" onclick="videoNextStep()">आगे →</button>
+            <button class="btn btn-primary btn-sm" id="vstep-next" onclick="videoNextStep()">Aage →</button>
           </div>
         </div>
       </div>
 
       <!-- BOTTOM: saved videos list (Step 5 only) -->
       <div id="video-list-section" style="display:none;padding:0 16px 16px">
-        <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px">📂 पहले रिकॉर्ड किए गए वीडियो</div>
+        <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px">📂 Pehle record kiye gaye videos</div>
         <div class="video-list" id="video-list-items"></div>
       </div>
 
@@ -1543,12 +1543,12 @@ loadCustomers();
   let currentVideoStep = 0; // index into VIDEO_STEPS
 
   const VIDEO_STEPS = [
-    { id: 'intro',     label: 'चरण 1 — प्रारंभ',           icon: '🎬' },
-    { id: 'audio',     label: 'चरण 2 — ऑडियो सारांश',      icon: '🔊' },
-    { id: 'questions', label: 'चरण 3 — प्रश्न',             icon: '❓' },
-    { id: 'document',  label: 'चरण 4 — दस्तावेज़ दिखाएं',   icon: '📄' },
-    { id: 'closing',   label: 'चरण 5 — समापन पुष्टि',       icon: '🗣️' },
-    { id: 'finish',    label: 'चरण 6 — समाप्त करें',         icon: '✅' },
+    { id: 'intro',     label: 'Charan 1 — Prarambh',        icon: '🎬' },
+    { id: 'audio',     label: 'Charan 2 — Audio Summary',   icon: '🔊' },
+    { id: 'questions', label: 'Charan 3 — Prashn',          icon: '❓' },
+    { id: 'document',  label: 'Charan 4 — Document Dikhayein', icon: '📄' },
+    { id: 'closing',   label: 'Charan 5 — Samapan Pushti',  icon: '🗣️' },
+    { id: 'finish',    label: 'Charan 6 — Samapt Karein',   icon: '✅' },
   ];
 
   // Look steps up by id so inserting/reordering a step cannot desync the
@@ -1563,7 +1563,7 @@ loadCustomers();
     statusEl.style.color = '';
     if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      statusEl.textContent = '❌ यह ब्राउज़र कैमरा सपोर्ट नहीं करता।'; statusEl.style.color='red'; return;
+      statusEl.textContent = '❌ Yeh browser camera support nahi karta.'; statusEl.style.color='red'; return;
     }
     try {
       videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
@@ -1572,15 +1572,15 @@ loadCustomers();
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
         audioStream.getAudioTracks().forEach(t => videoStream.addTrack(t));
       } catch(audioErr) {
-        statusEl.innerHTML = '⚠️ माइक्रोफ़ोन उपलब्ध नहीं — केवल वीडियो रिकॉर्ड होगा।';
+        statusEl.innerHTML = '⚠️ Microphone uplabdh nahi — sirf video record hoga.';
         statusEl.style.color = 'orange';
       }
     } catch(e) {
       const msgs = {
-        NotAllowedError: '❌ कैमरा ब्लॉक है। 🔒 → Camera → Allow करें, फिर रीलोड करें।',
-        PermissionDeniedError: '❌ कैमरा ब्लॉक है। 🔒 → Camera → Allow करें, फिर रीलोड करें।',
-        NotFoundError: '❌ कोई कैमरा नहीं मिला।',
-        NotReadableError: '❌ कैमरा किसी और ऐप में खुला है — बंद करके दोबारा कोशिश करें।',
+        NotAllowedError: '❌ Camera block hai. 🔒 → Camera → Allow karein, phir reload karein.',
+        PermissionDeniedError: '❌ Camera block hai. 🔒 → Camera → Allow karein, phir reload karein.',
+        NotFoundError: '❌ Koi camera nahi mila.',
+        NotReadableError: '❌ Camera kisi aur app mein khula hai — band karke dobara koshish karein.',
       };
       statusEl.textContent = msgs[e.name] || ('❌ ' + e.name + ': ' + e.message);
       statusEl.style.color = 'red';
@@ -1588,7 +1588,7 @@ loadCustomers();
   }
 
   function startRecording() {
-    if (!videoStream) return toast('पहले कैमरा चालू करें');
+    if (!videoStream) return toast('Pehle camera chaalu karein');
     recordedChunks = [];
     const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
       ? 'video/webm;codecs=vp9,opus' : 'video/webm';
@@ -1621,19 +1621,19 @@ loadCustomers();
   async function saveVideo() {
     if (!recordedBlob || !currentCustomer) return;
     const statusEl = document.getElementById('video-save-status');
-    statusEl.textContent = '⏳ अपलोड हो रहा है…'; statusEl.style.color = 'var(--gray-600)';
+    statusEl.textContent = '⏳ Upload ho raha hai…'; statusEl.style.color = 'var(--gray-600)';
     const formData = new FormData();
     formData.append('video', recordedBlob, 'verification.webm');
     try {
       const res = await fetch('/api/video/' + currentCustomer.id + '/upload', { method: 'POST', body: formData });
       const data = await res.json();
       if (res.ok) {
-        statusEl.textContent = '✅ वीडियो सफलतापूर्वक सहेजा गया!'; statusEl.style.color = 'green';
-        toast('वीडियो सहेजा गया');
+        statusEl.textContent = '✅ Video safaltapoorvak save ho gaya!'; statusEl.style.color = 'green';
+        toast('Video save ho gaya');
         loadVideoList(currentCustomer.id);
         recordedBlob = null; recordedChunks = [];
       } else {
-        statusEl.textContent = '❌ ' + (data.error || 'अपलोड विफल'); statusEl.style.color = 'red';
+        statusEl.textContent = '❌ ' + (data.error || 'Upload vifal'); statusEl.style.color = 'red';
       }
     } catch(e) {
       statusEl.textContent = '❌ ' + e.message; statusEl.style.color = 'red';
@@ -1684,31 +1684,31 @@ loadCustomers();
         : new Date().toLocaleDateString('hi-IN', {day:'2-digit',month:'2-digit',year:'numeric'});
       body.innerHTML = `
         <div style="background:#ede9fe;border-radius:8px;padding:14px;margin-bottom:12px;font-size:15px;line-height:1.8;color:#3730a3">
-          आज दिनांक <b>${agreeDate}</b>, हम <b>${c.name||'___'}</b> जी की ऋण सुविधा परामर्श अनुबंध की वीडियो पुष्टि रिकॉर्ड कर रहे हैं।
+          Aaj dinank <b>${agreeDate}</b>, hum <b>${c.name||'___'}</b> ji ke loan facility consultancy agreement ki video pushti record kar rahe hain.
         </div>
-        <p style="font-size:13px;color:var(--gray-600);margin-bottom:10px">▶ यह वाक्य कैमरे की तरफ बोलें। ग्राहक और आप दोनों फ्रेम में हों।</p>
-        <p style="font-size:13px;color:var(--gray-600)">रिकॉर्डिंग अभी <b>शुरू नहीं</b> हुई है — अगले चरण पर जाएं।</p>`;
-      nextBtn.textContent = 'रिकॉर्डिंग शुरू करें →';
+        <p style="font-size:13px;color:var(--gray-600);margin-bottom:10px">▶ Yeh vaakya camera ki taraf bolein. Grahak aur aap dono frame mein hon.</p>
+        <p style="font-size:13px;color:var(--gray-600)">Recording abhi <b>shuru nahi</b> hui hai — agle charan par jayein.</p>`;
+      nextBtn.textContent = 'Recording shuru karein →';
       nextBtn.className = 'btn btn-primary btn-sm';
 
     } else if (step.id === 'audio') {
       body.innerHTML = `
-        <p style="margin-bottom:14px;font-size:13px;color:var(--gray-600)">रिकॉर्डिंग चल रही है <span style="color:#ef4444;font-weight:700">●</span></p>
+        <p style="margin-bottom:14px;font-size:13px;color:var(--gray-600)">Recording chal rahi hai <span style="color:#ef4444;font-weight:700">●</span></p>
         <div style="background:#fef3c7;border-radius:8px;padding:14px;margin-bottom:14px;font-size:13px;line-height:1.7;color:#92400e">
-          <b>📺 TV/स्क्रीन पर ऑडियो सारांश चलाएं</b><br><br>
-          ग्राहक को अनुबंध की मुख्य शर्तें सुनाई देनी चाहिए:<br>
-          • परामर्श सेवा निःशुल्क है<br>
-          • सफलता शुल्क — ऋण वितरण पर ही देय<br>
-          • PDC चेक — केवल वितरण या भंग होने पर<br>
-          • Section 138 — चेक बाउंस पर आपराधिक दायित्व<br>
-          • Ruralift पूरी कोशिश करेगा — स्वीकृति का निर्णय बैंक का<br>
-          • <b>सभी ऋण/EMI/गारंटी बताना अनिवार्य</b> — छिपाने पर चेक राशि का 25%<br>
-          • <b>प्रक्रिया शुरू होने के बाद वापसी नहीं</b> — करने पर चेक राशि का 25%<br>
-          • <b>ऋण मिलने पर 2 घंटे में सूचना</b> देना अनिवार्य<br>
-          • प्रक्रिया शुरू होने <i>से पहले</i> ग्राहक बिना शुल्क पीछे हट सकता है
+          <b>📺 TV/screen par audio summary chalayein</b><br><br>
+          Grahak ko agreement ki mukhya sharten sunai deni chahiye:<br>
+          • Consultancy service nishulk (free) hai<br>
+          • Success fee — loan disbursement par hi deni hogi<br>
+          • PDC cheque — sirf disbursement ya bhang hone par<br>
+          • Section 138 — cheque bounce par criminal daayitva<br>
+          • Ruralift poori koshish karega — approval ka nirnay bank ka<br>
+          • <b>Sabhi loan/EMI/guarantee batana anivarya</b> — chhipane par cheque rashi ka 25%<br>
+          • <b>Process shuru hone ke baad wapsi nahi</b> — karne par cheque rashi ka 25%<br>
+          • <b>Loan milne par 2 ghante mein soochna</b> dena anivarya<br>
+          • Process shuru hone <i>se pehle</i> grahak bina fee peechhe hat sakta hai
         </div>
-        <p style="font-size:13px;color:var(--gray-600)">ऑडियो समाप्त होने पर "आगे" दबाएं।</p>`;
-      nextBtn.textContent = 'ऑडियो हो गया — प्रश्न शुरू करें →';
+        <p style="font-size:13px;color:var(--gray-600)">Audio samapt hone par "Aage" dabayein.</p>`;
+      nextBtn.textContent = 'Audio ho gaya — prashn shuru karein →';
       nextBtn.className = 'btn btn-primary btn-sm';
 
     } else if (step.id === 'questions') {
@@ -1716,38 +1716,38 @@ loadCustomers();
         const qs = videoScriptData.blocks.filter(b => !b.type); // only Q blocks
         body.innerHTML = `
           <div style="background:#ede9fe;border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:13px;line-height:1.7;color:#3730a3">
-            <b>हर प्रश्न ग्राहक को पढ़कर सुनाएं।</b> ग्राहक को कुछ भी दोहराना नहीं है —
-            वह केवल <b>"हाँ" या "नहीं"</b> कहेगा/कहेगी। (केवल Q1 में नाम बोलकर बताना है।)
+            <b>Har prashn grahak ko padhkar sunayein.</b> Grahak ko kuch bhi dohraana nahi hai —
+            vah sirf <b>"Haan" ya "Nahi"</b> kahega/kahegi. (Sirf Q1 mein naam bolkar batana hai.)
           </div>` + qs.map((b, i) => `
           <div style="margin-bottom:14px;padding:10px 12px;border-radius:8px;background:#f8fafc;border-left:3px solid #7c3aed">
             <div style="font-size:11px;font-weight:700;color:#7c3aed;margin-bottom:4px">${b.label}</div>
             <div style="font-size:14px;line-height:1.7;white-space:pre-line">${b.text}</div>
             <div style="display:inline-block;margin-top:8px;padding:2px 10px;border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:700">
-              उत्तर: ${b.respond || 'हाँ / नहीं'}
+              Uttar: ${b.respond || 'Haan / Nahi'}
             </div>
           </div>`).join('');
       } else {
-        body.innerHTML = '<p style="color:var(--gray-400)">स्क्रिप्ट लोड हो रही है…</p>';
+        body.innerHTML = '<p style="color:var(--gray-400)">Script load ho rahi hai…</p>';
       }
-      nextBtn.textContent = 'सभी प्रश्न हो गए →';
+      nextBtn.textContent = 'Sabhi prashn ho gaye →';
       nextBtn.className = 'btn btn-primary btn-sm';
 
     } else if (step.id === 'document') {
       body.innerHTML = `
         <div style="background:#dcfce7;border-radius:8px;padding:14px;margin-bottom:14px;font-size:14px;line-height:1.8;color:#166534">
-          <b>📄 ग्राहक से कहें:</b><br><br>
-          "अब कृपया अपने <b>हस्ताक्षरित दस्तावेज़</b> कैमरे के सामने दिखाएं।<br><br>
-          — पहले अनुबंध का <b>पहला पृष्ठ</b> दिखाएं<br>
-          — फिर वह पृष्ठ जहाँ आपके <b>हस्ताक्षर और अंगूठे का निशान</b> है<br>
-          — फिर <b>परिशिष्ट "अ" स्व-घोषणा पत्र</b> दिखाएं — विशेष रूप से वह भाग जो आपने <b>अपने हाथ से लिखा</b> है<br>
-          — अंत में <b>PDC रसीद</b> वाला पृष्ठ दिखाएं<br>
-          — हर पृष्ठ कैमरे के पास लाएं ताकि लिखावट स्पष्ट पढ़ी जा सके"
+          <b>📄 Grahak se kahein:</b><br><br>
+          "Ab kripya apne <b>signed documents</b> camere ke saamne dikhayein.<br><br>
+          — Pehle agreement ka <b>pehla prishth</b> dikhayein<br>
+          — Phir vah prishth jahaan aapke <b>signature aur angoothe ka nishaan</b> hai<br>
+          — Phir <b>Parishisht "A" swa-ghoshna patra</b> dikhayein — vishesh roop se vah bhaag jo aapne <b>apne haath se likha</b> hai<br>
+          — Ant mein <b>PDC raseed</b> wala prishth dikhayein<br>
+          — Har prishth camere ke paas laayein taaki likhavat spasht padhi ja sake"
         </div>
         <p style="font-size:12px;color:#b45309;margin-bottom:10px">
-          ⚠️ परिशिष्ट "अ" का हस्तलिखित भाग वीडियो में स्पष्ट दिखना ज़रूरी है — यही 25% क्षतिपूर्ति क्लॉज़ का मुख्य सबूत है।
+          ⚠️ Parishisht "A" ka hastlikhit bhaag video mein spasht dikhna zaroori hai — yahi 25% kshatipurti clause ka mukhya saboot hai.
         </p>
-        <p style="font-size:13px;color:var(--gray-600)">दस्तावेज़ स्पष्ट दिखने के बाद "आगे" दबाएं।</p>`;
-      nextBtn.textContent = 'आगे — समापन पुष्टि →';
+        <p style="font-size:13px;color:var(--gray-600)">Document spasht dikhne ke baad "Aage" dabayein.</p>`;
+      nextBtn.textContent = 'Aage — Samapan Pushti →';
       nextBtn.className = 'btn btn-primary btn-sm';
 
     } else if (step.id === 'closing') {
@@ -1756,20 +1756,20 @@ loadCustomers();
         : null;
       body.innerHTML = closing ? `
         <div style="background:#fef3c7;border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:13px;line-height:1.7;color:#92400e">
-          <b>🗣️ यह पूरा वक्तव्य ग्राहक को धीरे-धीरे पढ़कर सुनाएं।</b><br>
-          ग्राहक को इसे दोहराना नहीं है — अंत में वह केवल <b>"हाँ"</b> कहेगा/कहेगी।
+          <b>🗣️ Yeh poora vaktavya grahak ko dheere-dheere padhkar sunayein.</b><br>
+          Grahak ko ise dohraana nahi hai — ant mein vah sirf <b>"Haan"</b> kahega/kahegi.
         </div>
         <div style="padding:12px 14px;border-radius:8px;background:#f8fafc;border-left:3px solid #16a34a">
           <div style="font-size:11px;font-weight:700;color:#166534;margin-bottom:6px">${closing.label}</div>
           <div style="font-size:15px;line-height:1.9;white-space:pre-line">${closing.text}</div>
           <div style="display:inline-block;margin-top:10px;padding:2px 10px;border-radius:999px;background:#dcfce7;color:#166534;font-size:12px;font-weight:700">
-            उत्तर: ${closing.respond || 'हाँ / नहीं'}
+            Uttar: ${closing.respond || 'Haan / Nahi'}
           </div>
         </div>
         <p style="font-size:12px;color:#b45309;margin-top:12px">
-          ⚠️ ग्राहक का "हाँ" कैमरे में स्पष्ट सुनाई देना ज़रूरी है — तभी रिकॉर्डिंग रोकें।
-        </p>` : '<p style="color:var(--gray-400)">स्क्रिप्ट लोड हो रही है…</p>';
-      nextBtn.textContent = 'रिकॉर्डिंग रोकें और समाप्त करें →';
+          ⚠️ Grahak ka "Haan" camere mein spasht sunai dena zaroori hai — tabhi recording rokein.
+        </p>` : '<p style="color:var(--gray-400)">Script load ho rahi hai…</p>';
+      nextBtn.textContent = 'Recording rokein aur samapt karein →';
       nextBtn.className = 'btn btn-danger btn-sm';
 
     } else if (step.id === 'finish') {
@@ -1779,11 +1779,11 @@ loadCustomers();
       loadVideoList(currentCustomer.id);
       body.innerHTML = `
         <div style="background:#f0fdf4;border-radius:8px;padding:14px;margin-bottom:14px;font-size:13px;line-height:1.7;color:#166534">
-          <b>✅ रिकॉर्डिंग पूरी हुई।</b><br><br>
-          नीचे वीडियो देखें — सब ठीक लगे तो <b>सहेजें</b> दबाएं।<br>
-          कुछ गलत हो तो <b>दोबारा करें</b> दबाएं।
+          <b>✅ Recording poori hui.</b><br><br>
+          Neeche video dekhein — sab theek lage to <b>Save</b> dabayein.<br>
+          Kuch galat ho to <b>Dobara karein</b> dabayein.
         </div>`;
-      nextBtn.textContent = '💾 वीडियो सहेजें';
+      nextBtn.textContent = '💾 Video save karein';
       nextBtn.className = 'btn btn-green btn-sm';
     }
   }
@@ -1861,33 +1861,33 @@ loadCustomers();
       const res = await fetch('/api/video/' + customerId + '/list');
       const data = await res.json();
       if (!data.videos || data.videos.length === 0) {
-        listEl.innerHTML = '<div style="font-size:13px;color:var(--gray-400)">कोई वीडियो नहीं मिला</div>';
+        listEl.innerHTML = '<div style="font-size:13px;color:var(--gray-400)">Koi video nahi mila</div>';
         return;
       }
       listEl.innerHTML = data.videos.map((v, i) => `
         <div class="video-list-item">
-          <a href="/api/video/file/${encodeURIComponent(v.filename)}" target="_blank">🎥 वीडियो ${i+1} — ${v.date}</a>
+          <a href="/api/video/file/${encodeURIComponent(v.filename)}" target="_blank">🎥 Video ${i+1} — ${v.date}</a>
           <span style="font-size:12px;color:var(--gray-400)">${v.size}</span>
           <button class="btn btn-danger btn-sm" style="padding:2px 8px" onclick="deleteModalVideo('${customerId}','${v.filename}')">🗑</button>
         </div>`).join('');
     } catch(e) {
-      listEl.innerHTML = '<div style="font-size:13px;color:red">लिस्ट लोड नहीं हुई</div>';
+      listEl.innerHTML = '<div style="font-size:13px;color:red">List load nahi hui</div>';
     }
   }
 
   async function deleteModalVideo(customerId, filename) {
-    if (!confirm('क्या आप यह वीडियो सेशन डिलीट करना चाहते हैं? यह वापस नहीं होगा।')) return;
+    if (!confirm('Kya aap yeh video session delete karna chahte hain? Yeh wapas nahi hoga.')) return;
     try {
       const res = await fetch('/api/video/' + customerId + '/' + encodeURIComponent(filename), { method: 'DELETE' });
       const data = await res.json();
       if (res.ok) {
-        toast('वीडियो डिलीट हो गया');
+        toast('Video delete ho gaya');
         loadVideoList(customerId);
       } else {
-        toast(data.error || 'डिलीट विफल');
+        toast(data.error || 'Delete vifal');
       }
     } catch(e) {
-      toast('डिलीट विफल: ' + e.message);
+      toast('Delete vifal: ' + e.message);
     }
   }
 
